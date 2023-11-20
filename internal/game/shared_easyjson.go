@@ -290,6 +290,8 @@ func easyjson9aa6bd57DecodeGithubComScribbleRsScribbleRsInternalGame2(in *jlexer
 			out.AllowDrawing = bool(in.Bool())
 		case "votekickEnabled":
 			out.VotekickEnabled = bool(in.Bool())
+		case "gifEnabled":
+			out.GifEnabled = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -415,6 +417,11 @@ func easyjson9aa6bd57EncodeGithubComScribbleRsScribbleRsInternalGame2(out *jwrit
 		const prefix string = ",\"votekickEnabled\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.VotekickEnabled))
+	}
+	{
+		const prefix string = ",\"gifEnabled\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GifEnabled))
 	}
 	out.RawByte('}')
 }
@@ -1451,6 +1458,8 @@ func easyjson9aa6bd57DecodeGithubComScribbleRsScribbleRsInternalGame12(in *jlexe
 			out.AllowDrawing = bool(in.Bool())
 		case "votekickEnabled":
 			out.VotekickEnabled = bool(in.Bool())
+		case "gifEnabled":
+			out.GifEnabled = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1581,6 +1590,11 @@ func easyjson9aa6bd57EncodeGithubComScribbleRsScribbleRsInternalGame12(out *jwri
 		const prefix string = ",\"votekickEnabled\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.VotekickEnabled))
+	}
+	{
+		const prefix string = ",\"gifEnabled\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GifEnabled))
 	}
 	out.RawByte('}')
 }
@@ -1945,6 +1959,8 @@ func easyjson9aa6bd57DecodeGithubComScribbleRsScribbleRsInternalGame16(in *jlexe
 			out.DrawingTime = int(in.Int())
 		case "rounds":
 			out.Rounds = int(in.Int())
+		case "gifEnabled":
+			out.GifEnabled = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1993,6 +2009,11 @@ func easyjson9aa6bd57EncodeGithubComScribbleRsScribbleRsInternalGame16(out *jwri
 		const prefix string = ",\"rounds\":"
 		out.RawString(prefix)
 		out.Int(int(in.Rounds))
+	}
+	{
+		const prefix string = ",\"gifEnabled\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GifEnabled))
 	}
 	out.RawByte('}')
 }

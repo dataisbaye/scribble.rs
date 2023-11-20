@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{{.RootPath}}/resources/base.css?cache_bust={{.CacheBust}}" />
     <link rel="stylesheet" type="text/css" href="{{.RootPath}}/resources/lobby.css?cache_bust={{.CacheBust}}" />
     {{template "favicon-decl" .}}
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.min.js"></script>
 </head>
 
 <body>
@@ -191,6 +192,8 @@
                                     <b>{{.Translation.Get "enable-votekick-setting"}}</b>
                                     <input id="lobby-settings-enable-votekick" type="checkbox" name="enable_votekick" {{if eq .EnableVotekick
                                                     true}}checked{{end}} />
+                                    <b>{{.Translation.Get "gif-enabled-setting"}}</b>
+                                    <input id="lobby-settings-gif-enabled" type="checkbox" name="gif_enabled" />
                                 </div>
                             </div>
                             <div class="button-center-wrapper">
@@ -223,6 +226,22 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div id="gif-container">
+                <div>
+                    <select id="gif-urls">
+                        <option disabled selected value="">
+                            Select Drawing
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <button onclick="saveGif()"
+                            alt="{{.Translation.Get "save-gif"}}" title="{{.Translation.Get "save-gif"}}">
+                    Download GIF
+                    </button>
                 </div>
             </div>
 
@@ -536,6 +555,11 @@
         let sound = localStorage.getItem("sound") !== "false";
         updateSoundIcon();
 
+        const gifContainer = document.getElementById('gif-container');
+        const gifUrlSelect = document.getElementById('gif-urls');
+        let gifLoading = null;
+        let frameIntervalId = null;
+
         function showTextDialog(id, title, message) {
             const messageNode = document.createElement("span");
             messageNode.innerText = message;
@@ -696,6 +720,7 @@
                 max_players: document.getElementById("lobby-settings-max-players").value,
                 clients_per_ip_limit: document.getElementById("lobby-settings-clients-per-ip-limit").value,
                 custom_words_chance: document.getElementById("lobby-settings-custom-words-chance").value,
+                gif_enabled: document.getElementById("lobby-settings-gif-enabled").checked,
             }), {
                 method: 'PATCH',
             })
@@ -954,6 +979,12 @@
             }
         }
 
+        function saveGif() {
+            if (gifUrlSelect.value !== '') {
+                window.open(gifUrlSelect.value);
+            }
+        }
+
         //Used to restore the last message on arrow up.
         let lastMessage = "";
 
@@ -1022,6 +1053,7 @@
         let gameState = "unstarted";
         let votekickEnabled;
         let drawingTimeSetting = "∞";
+        let gifEnabled = false;
 
         function registerMessageHandler(targetSocket) {
             targetSocket.onmessage = event => {
@@ -1029,6 +1061,8 @@
                 if (parsed.type === "ready") {
                     handleReadyEvent(parsed.data);
                 } else if (parsed.type === "game-over") {
+                    handleGif(false);
+
                     let ready = parsed.data;
                     showRoundEndMessage(ready.previousWord);
                     handleReadyEvent(ready);
@@ -1099,6 +1133,7 @@
                     round = parsed.data.round;
                     updateRoundsDisplay();
                     applyPlayers(parsed.data.players);
+                    handleGif(true);
 
                     //Even though we always hide the dialog in the "your-turn"
                     //event handling, it will be shortly visible if we it here.
@@ -1151,6 +1186,7 @@
                     rounds = parsed.data.rounds;
                     updateRoundsDisplay();
                     updateButtonVisibilities();
+                    updateGifUiVisibility();
                     appendMessage("system-message", '{{.Translation.Get "system"}}', '{{.Translation.Get "lobby-settings-changed"}}\n\n'
                         + '{{.Translation.Get "drawing-time-setting"}}: ' + parsed.data.drawingTime + "\n"
                         + '{{.Translation.Get "rounds-setting"}}: ' + parsed.data.rounds + "\n"
@@ -1158,7 +1194,8 @@
                         + '{{.Translation.Get "enable-votekick-setting"}}: ' + parsed.data.enableVotekick + "\n"
                         + '{{.Translation.Get "max-players-setting"}}: ' + parsed.data.maxPlayers + "\n"
                         + '{{.Translation.Get "custom-words-chance-setting"}}: ' + parsed.data.customWordsChance + "%\n"
-                        + '{{.Translation.Get "players-per-ip-limit-setting"}}: ' + parsed.data.clientsPerIpLimit);
+                        + '{{.Translation.Get "players-per-ip-limit-setting"}}: ' + parsed.data.clientsPerIpLimit  + "\n"
+                        + '{{.Translation.Get "gif-enabled-setting"}}: ' + parsed.data.gifEnabled);
                 } else if (parsed.type === "shutdown") {
                     socket.onclose = null;
                     socket.close();
@@ -1167,6 +1204,53 @@
                 }
             }
         };
+
+        function handleGif(startNextGif) {
+            if (gifEnabled) {
+                if (gifLoading !== null) {
+                    gifLoading.then(gif => {
+                        clearInterval(frameIntervalId);
+                        const canvasData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+                        gif.addFrame(canvasData, {delay: 100});
+                        gif.render();
+                    });
+                }
+
+                if (startNextGif) {
+                    let optionText = drawerName + ': Round ' + round.toString();
+                    gifLoading = fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js')
+                        .then((response) => {
+                            if (!response.ok)
+                                throw new Error("Network response was not OK");
+                            return response.blob();
+                        }).then(workerBlob => {
+                            let gif = new GIF({
+                                workers: 1,
+                                workerScript: URL.createObjectURL(workerBlob),
+                                quality: 10,
+                                width: context.clientWidth,
+                                height: context.clientHeight});
+
+                            gif.on('finished', function(blob) {
+                                const option = document.createElement('option');
+                                option.value = URL.createObjectURL(blob);
+                                option.innerHTML = optionText;
+                                gifUrlSelect.appendChild(option);
+                            });
+
+                            return gif;
+                        });
+
+                    gifLoading.then(gif => {
+                        const addFrame = function () {
+                            const canvasData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+                            gif.addFrame(canvasData, {delay: 100});
+                        };
+                        frameIntervalId = setInterval(addFrame, 1000);
+                    });
+                }
+            }
+        }
 
         function showRoundEndMessage(previousWord) {
             if (previousWord === "") {
@@ -1214,8 +1298,10 @@
             gameState = ready.gameState;
             votekickEnabled = ready.votekickEnabled;
             drawingTimeSetting = ready.drawingTimeSetting;
+            gifEnabled = ready.gifEnabled;
             updateRoundsDisplay();
             updateButtonVisibilities();
+            updateGifUiVisibility();
 
             if (ready.players && ready.players.length) {
                 applyPlayers(ready.players);
@@ -1321,6 +1407,14 @@
                 kickButton.style.display = "initial";
             } else {
                 kickButton.style.display = "none";
+            }
+        }
+
+        function updateGifUiVisibility() {
+            if (gifEnabled) {
+                gifContainer.style.display = "initial";
+            } else {
+                gifContainer.style.display = "none";
             }
         }
 

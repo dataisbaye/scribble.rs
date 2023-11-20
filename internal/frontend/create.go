@@ -67,6 +67,7 @@ func ssrCreateLobby(writer http.ResponseWriter, request *http.Request) {
 	clientsPerIPLimit, clientsPerIPLimitInvalid := api.ParseClientsPerIPLimit(request.Form.Get("clients_per_ip_limit"))
 	enableVotekick, enableVotekickInvalid := api.ParseBoolean("enable votekick", request.Form.Get("enable_votekick"))
 	publicLobby, publicLobbyInvalid := api.ParseBoolean("public", request.Form.Get("public"))
+	gifEnabled, gifEnabledInvalid := api.ParseBoolean("gif_enabled", request.Form.Get("gif_enabled"))
 
 	// Prevent resetting the form, since that would be annoying as hell.
 	pageData := LobbyCreatePageData{
@@ -83,6 +84,7 @@ func ssrCreateLobby(writer http.ResponseWriter, request *http.Request) {
 			ClientsPerIPLimit: request.Form.Get("clients_per_ip_limit"),
 			EnableVotekick:    request.Form.Get("enable_votekick"),
 			Language:          request.Form.Get("language"),
+			GifEnabled:        request.Form.Get("gif_enabled"),
 		},
 	}
 
@@ -113,6 +115,9 @@ func ssrCreateLobby(writer http.ResponseWriter, request *http.Request) {
 	if publicLobbyInvalid != nil {
 		pageData.Errors = append(pageData.Errors, publicLobbyInvalid.Error())
 	}
+	if gifEnabledInvalid != nil {
+		pageData.Errors = append(pageData.Errors, gifEnabledInvalid.Error())
+	}
 
 	translation, locale := determineTranslation(request)
 	pageData.Translation = translation
@@ -128,7 +133,9 @@ func ssrCreateLobby(writer http.ResponseWriter, request *http.Request) {
 
 	playerName := api.GetPlayername(request)
 
-	player, lobby, err := game.CreateLobby(playerName, language, publicLobby, drawingTime, rounds, maxPlayers, customWordChance, clientsPerIPLimit, customWords, enableVotekick)
+	player, lobby, err := game.CreateLobby(playerName, language,
+	    publicLobby, gifEnabled, drawingTime, rounds, maxPlayers, customWordChance,
+	    clientsPerIPLimit, customWords, enableVotekick)
 	if err != nil {
 		pageData.Errors = append(pageData.Errors, err.Error())
 		if err := pageTemplates.ExecuteTemplate(writer, "lobby-create-page", pageData); err != nil {

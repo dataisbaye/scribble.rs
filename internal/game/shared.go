@@ -192,6 +192,7 @@ type Ready struct {
 	DrawingTimeSetting int         `json:"drawingTimeSetting"`
 	AllowDrawing       bool        `json:"allowDrawing"`
 	VotekickEnabled    bool        `json:"votekickEnabled"`
+	GifEnabled         bool        `json:"gifEnabled"`
 }
 
 // Player represents a participant in a Lobby.
@@ -250,5 +251,8 @@ type EditableLobbySettings struct {
 	DrawingTime int `json:"drawingTime"`
 	// Rounds defines how many iterations a lobby does before the game ends.
 	// One iteration means every participant does one drawing.
-	Rounds int `json:"rounds"`
+	Rounds int `json:"rounds"`  // TODO this wasn't in mine and I def didn't delete
+	// GifEnabled is whether or not the client should generate GIFs of all of
+	// the drawings.
+	GifEnabled bool `json:"gifEnabled"`
 }

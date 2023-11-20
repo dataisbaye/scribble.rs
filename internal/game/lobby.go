@@ -652,7 +652,7 @@ func advanceLobbyPredefineDrawer(lobby *Lobby, roundOver bool, newDrawer *Player
 	lobby.ClearDrawing()
 	newDrawer.State = Drawing
 	lobby.State = Ongoing
-	lobby.wordChoice = GetRandomWords(3, lobby)
+	lobby.wordChoice = GetRandomWords(10, lobby)
 
 	// We use milliseconds for higher accuracy
 	lobby.roundEndTime = getTimeAsMillis() + int64(lobby.DrawingTime)*1000
@@ -869,7 +869,13 @@ func (lobby *Lobby) selectWord(wordChoiceIndex int) {
 
 // CreateLobby creates a new lobby including the initial player (owner) and
 // optionally returns an error, if any occurred during creation.
-func CreateLobby(playerName, chosenLanguage string, publicLobby bool, drawingTime, rounds, maxPlayers, customWordsChance, clientsPerIPLimit int, customWords []string, enableVotekick bool) (*Player, *Lobby, error) {
+func CreateLobby(
+    playerName, chosenLanguage string,
+    publicLobby, gifEnabled bool,
+    drawingTime, rounds, maxPlayers, customWordsChance, clientsPerIPLimit int,
+    customWords []string,
+    enableVotekick bool,
+) (*Player, *Lobby, error) {
 	lobby := &Lobby{
 		LobbyID: uuid.Must(uuid.NewV4()).String(),
 		EditableLobbySettings: EditableLobbySettings{
@@ -880,6 +886,7 @@ func CreateLobby(playerName, chosenLanguage string, publicLobby bool, drawingTim
 			ClientsPerIPLimit: clientsPerIPLimit,
 			EnableVotekick:    enableVotekick,
 			Public:            publicLobby,
+			GifEnabled:        gifEnabled,
 		},
 		CustomWords:    customWords,
 		currentDrawing: make([]any, 0),
@@ -943,6 +950,7 @@ func generateReadyData(lobby *Lobby, player *Player) *Ready {
 		WordHints:          lobby.GetAvailableWordHints(player),
 		Players:            lobby.players,
 		CurrentDrawing:     lobby.currentDrawing,
+		GifEnabled:         lobby.GifEnabled,
 	}
 
 	if lobby.State != Ongoing {

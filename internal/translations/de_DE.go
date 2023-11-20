@@ -31,6 +31,7 @@ func initGermanTranslation() {
 	translation.put("rounds-setting", "Runden")
 	translation.put("max-players-setting", "Maximale Spieler")
 	translation.put("public-lobby-setting", "Öffentliche Lobby")
+	translation.put("gif-enabled-setting", "GIF aktiviert")
 	translation.put("custom-words", "Extrawörter")
 	translation.put("custom-words-info", "Gib hier deine Extrawörter ein und trenne einzelne Wörter mit einem Komma")
 	translation.put("custom-words-chance-setting", "Chance auf Extrawort")
@@ -68,6 +69,7 @@ func initGermanTranslation() {
 	translation.put("change-pencil-size-to", "Ändere die Stift / Radiergummi Größe auf %s")
 	translation.put("clear-canvas", "Leere die Zeichenfläche")
 	translation.put("undo", "Mache deine letzte Änderung ungeschehen (Funktioniert nicht nach \""+translation.Get("clear-canvas")+"\")")
+	translation.put("save-gif", "Speichert ein GIF der letzten Zeichnung")
 
 	translation.put("connection-lost", "Verbindung verloren!")
 	translation.put("connection-lost-text", "Versuche Verbindung wiederherzustellen"+

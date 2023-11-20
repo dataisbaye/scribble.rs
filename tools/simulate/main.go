@@ -58,6 +58,7 @@ func PostLobby() (*api.LobbyData, error) {
 		"custom_words_chance":  50,
 		"enable_votekick":      true,
 		"public":               true,
+		"gif_enabled":           false,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %w", err)

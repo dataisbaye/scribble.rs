@@ -22,6 +22,7 @@ type LobbySettingDefaults struct {
 	ClientsPerIPLimit string `env:"CLIENTS_PER_IP_LIMIT"`
 	EnableVotekick    string `env:"ENABLE_VOTEKICK"`
 	Language          string `env:"LANGUAGE"`
+	GifEnabled         string `env:"GIF_ENABLED"`
 }
 
 type CORS struct {

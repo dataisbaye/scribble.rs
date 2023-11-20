@@ -85,6 +85,7 @@ func postLobby(writer http.ResponseWriter, request *http.Request) {
 	clientsPerIPLimit, clientsPerIPLimitInvalid := ParseClientsPerIPLimit(request.Form.Get("clients_per_ip_limit"))
 	enableVotekick, enableVotekickInvalid := ParseBoolean("enable votekick", request.Form.Get("enable_votekick"))
 	publicLobby, publicLobbyInvalid := ParseBoolean("public", request.Form.Get("public"))
+	gifEnabled, gifEnabledInvalid := ParseBoolean("gif_enabled", request.Form.Get("gif_enabled"))
 
 	var requestErrors []string
 	if languageInvalid != nil {
@@ -114,6 +115,9 @@ func postLobby(writer http.ResponseWriter, request *http.Request) {
 	if publicLobbyInvalid != nil {
 		requestErrors = append(requestErrors, publicLobbyInvalid.Error())
 	}
+	if gifEnabledInvalid != nil {
+		requestErrors = append(requestErrors, gifEnabledInvalid.Error())
+	}
 
 	if len(requestErrors) != 0 {
 		http.Error(writer, strings.Join(requestErrors, ";"), http.StatusBadRequest)
@@ -121,7 +125,9 @@ func postLobby(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	playerName := GetPlayername(request)
-	player, lobby, err := game.CreateLobby(playerName, language, publicLobby, drawingTime, rounds, maxPlayers, customWordChance, clientsPerIPLimit, customWords, enableVotekick)
+	player, lobby, err := game.CreateLobby(playerName, language,
+	    publicLobby, gifEnabled, drawingTime, rounds, maxPlayers, customWordChance,
+	    clientsPerIPLimit, customWords, enableVotekick)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
@@ -246,6 +252,7 @@ func patchLobby(writer http.ResponseWriter, request *http.Request) {
 	clientsPerIPLimit, clientsPerIPLimitInvalid := ParseClientsPerIPLimit(request.Form.Get("clients_per_ip_limit"))
 	enableVotekick, enableVotekickInvalid := ParseBoolean("enable votekick", request.Form.Get("enable_votekick"))
 	publicLobby, publicLobbyInvalid := ParseBoolean("public", request.Form.Get("public"))
+	gifEnabled, gifEnabledInvalid := ParseBoolean("gif_enabled", request.Form.Get("gif_enabled"))
 
 	owner := lobby.Owner
 	if owner == nil || owner.GetUserSession() != userSession {
@@ -279,6 +286,9 @@ func patchLobby(writer http.ResponseWriter, request *http.Request) {
 	if publicLobbyInvalid != nil {
 		requestErrors = append(requestErrors, publicLobbyInvalid.Error())
 	}
+	if gifEnabledInvalid != nil {
+		requestErrors = append(requestErrors, gifEnabledInvalid.Error())
+	}
 
 	if len(requestErrors) != 0 {
 		http.Error(writer, strings.Join(requestErrors, ";"), http.StatusBadRequest)
@@ -298,6 +308,7 @@ func patchLobby(writer http.ResponseWriter, request *http.Request) {
 		lobby.EnableVotekick = enableVotekick
 		lobby.Public = publicLobby
 		lobby.Rounds = rounds
+		lobby.GifEnabled = gifEnabled
 
 		if lobby.State == game.Ongoing {
 			lobby.DrawingTimeNew = drawingTime

@@ -84,6 +84,9 @@
                         <b>{{.Translation.Get "custom-words"}}</b>
                         <textarea class="input-item" name="custom_words"
                             placeholder="{{.Translation.Get "custom-words-info"}}">{{.CustomWords}}</textarea>
+                        <b>{{.Translation.Get "gif-enabled-setting"}}</b>
+                        <input class="input-item" type="checkbox" name="gif_enabled" value="true"
+                               {{if eq .GifEnabled "true"}}checked{{end}} />
                         <button type="submit" class="create-button" form="lobby-create">
                             {{.Translation.Get "create-lobby"}}
                         </button>
