@@ -652,7 +652,7 @@ func advanceLobbyPredefineDrawer(lobby *Lobby, roundOver bool, newDrawer *Player
 	lobby.ClearDrawing()
 	newDrawer.State = Drawing
 	lobby.State = Ongoing
-	lobby.wordChoice = GetRandomWords(10, lobby)
+	lobby.wordChoice = GetRandomWords(3, lobby)
 
 	// We use milliseconds for higher accuracy
 	lobby.roundEndTime = getTimeAsMillis() + int64(lobby.DrawingTime)*1000
