@@ -288,6 +288,8 @@ func easyjson9aa6bd57DecodeGithubComScribbleRsScribbleRsInternalGame2(in *jlexer
 			out.DrawingTimeSetting = int(in.Int())
 		case "allowDrawing":
 			out.AllowDrawing = bool(in.Bool())
+		case "gifEnabled":
+			out.GifEnabled = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -408,6 +410,11 @@ func easyjson9aa6bd57EncodeGithubComScribbleRsScribbleRsInternalGame2(out *jwrit
 		const prefix string = ",\"allowDrawing\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.AllowDrawing))
+	}
+	{
+		const prefix string = ",\"gifEnabled\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GifEnabled))
 	}
 	out.RawByte('}')
 }
@@ -1442,6 +1449,8 @@ func easyjson9aa6bd57DecodeGithubComScribbleRsScribbleRsInternalGame12(in *jlexe
 			out.DrawingTimeSetting = int(in.Int())
 		case "allowDrawing":
 			out.AllowDrawing = bool(in.Bool())
+		case "gifEnabled":
+			out.GifEnabled = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1567,6 +1576,11 @@ func easyjson9aa6bd57EncodeGithubComScribbleRsScribbleRsInternalGame12(out *jwri
 		const prefix string = ",\"allowDrawing\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.AllowDrawing))
+	}
+	{
+		const prefix string = ",\"gifEnabled\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GifEnabled))
 	}
 	out.RawByte('}')
 }
@@ -1929,6 +1943,8 @@ func easyjson9aa6bd57DecodeGithubComScribbleRsScribbleRsInternalGame16(in *jlexe
 			out.Rounds = int(in.Int())
 		case "drawingTime":
 			out.DrawingTime = int(in.Int())
+		case "gifEnabled":
+			out.GifEnabled = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1972,6 +1988,11 @@ func easyjson9aa6bd57EncodeGithubComScribbleRsScribbleRsInternalGame16(out *jwri
 		const prefix string = ",\"drawingTime\":"
 		out.RawString(prefix)
 		out.Int(int(in.DrawingTime))
+	}
+	{
+		const prefix string = ",\"gifEnabled\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.GifEnabled))
 	}
 	out.RawByte('}')
 }

@@ -191,6 +191,7 @@ type Ready struct {
 	RoundEndTime       int         `json:"roundEndTime"`
 	DrawingTimeSetting int         `json:"drawingTimeSetting"`
 	AllowDrawing       bool        `json:"allowDrawing"`
+	GifEnabled         bool        `json:"gifEnabled"`
 }
 
 // Player represents a participant in a Lobby.
@@ -244,4 +245,7 @@ type EditableLobbySettings struct {
 	// DrawingTime is the amount of seconds that each player has available to
 	// finish their drawing.
 	DrawingTime int `json:"drawingTime"`
+	// GifEnabled is whether or not the client should generate GIFs of all of
+	// the drawings.
+	GifEnabled bool `json:"gifEnabled"`
 }

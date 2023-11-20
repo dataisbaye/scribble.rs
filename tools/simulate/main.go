@@ -57,6 +57,7 @@ func PostLobby() (*api.LobbyData, error) {
 		"clients_per_ip_limit":  12,
 		"custom_words_per_turn": 3,
 		"public":                true,
+		"gif_enabled":           false,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %w", err)

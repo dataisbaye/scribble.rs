@@ -868,7 +868,7 @@ func (lobby *Lobby) selectWord(wordChoiceIndex int) {
 func CreateLobby(
 	cfg *config.Config,
 	playerName, chosenLanguage string,
-	publicLobby bool,
+	publicLobby, gifEnabled bool,
 	drawingTime, rounds, maxPlayers, customWordsPerTurn, clientsPerIPLimit int,
 	customWords []string,
 ) (*Player, *Lobby, error) {
@@ -881,6 +881,7 @@ func CreateLobby(
 			CustomWordsPerTurn: customWordsPerTurn,
 			ClientsPerIPLimit:  clientsPerIPLimit,
 			Public:             publicLobby,
+			GifEnabled:         gifEnabled,
 		},
 		CustomWords:    customWords,
 		currentDrawing: make([]any, 0),
@@ -936,6 +937,7 @@ func generateReadyData(lobby *Lobby, player *Player) *Ready {
 		WordHints:          lobby.GetAvailableWordHints(player),
 		Players:            lobby.players,
 		CurrentDrawing:     lobby.currentDrawing,
+		GifEnabled:         lobby.GifEnabled,
 	}
 
 	if lobby.State != Ongoing {
