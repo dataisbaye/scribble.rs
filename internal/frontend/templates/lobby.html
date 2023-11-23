@@ -1233,7 +1233,7 @@
 
                             gif.on('finished', function(blob) {
                                 const option = document.createElement('option');
-                                option.value = URL.createObjectURL(blob);
+                                option.value = URL.createObjectURL(blob, {oneTimeOnly: true});
                                 option.innerHTML = optionText;
                                 gifUrlSelect.appendChild(option);
                             });
