@@ -110,6 +110,7 @@ func (handler *SSRHandler) ssrCreateLobby(writer http.ResponseWriter, request *h
 	customWordsPerTurn, customWordsPerTurnInvalid := api.ParseCustomWordsPerTurn(request.Form.Get("custom_words_per_turn"))
 	clientsPerIPLimit, clientsPerIPLimitInvalid := api.ParseClientsPerIPLimit(request.Form.Get("clients_per_ip_limit"))
 	publicLobby, publicLobbyInvalid := api.ParseBoolean("public", request.Form.Get("public"))
+	gifEnabled, gifEnabledInvalid := api.ParseBoolean("gif_enabled", request.Form.Get("gif_enabled"))
 
 	// Prevent resetting the form, since that would be annoying as hell.
 	pageData := LobbyCreatePageData{
@@ -124,6 +125,7 @@ func (handler *SSRHandler) ssrCreateLobby(writer http.ResponseWriter, request *h
 			CustomWordsPerTurn: request.Form.Get("custom_words_per_turn"),
 			ClientsPerIPLimit:  request.Form.Get("clients_per_ip_limit"),
 			Language:           request.Form.Get("language"),
+			GifEnabled:         request.Form.Get("gif_enabled"),
 		},
 	}
 
@@ -151,6 +153,9 @@ func (handler *SSRHandler) ssrCreateLobby(writer http.ResponseWriter, request *h
 	if publicLobbyInvalid != nil {
 		pageData.Errors = append(pageData.Errors, publicLobbyInvalid.Error())
 	}
+	if gifEnabledInvalid != nil {
+		pageData.Errors = append(pageData.Errors, gifEnabledInvalid.Error())
+	}
 
 	translation, locale := determineTranslation(request)
 	pageData.Translation = translation
@@ -167,7 +172,7 @@ func (handler *SSRHandler) ssrCreateLobby(writer http.ResponseWriter, request *h
 	playerName := api.GetPlayername(request)
 
 	player, lobby, err := game.CreateLobby(handler.cfg, playerName, language,
-		publicLobby, drawingTime, rounds, maxPlayers, customWordsPerTurn,
+		publicLobby, gifEnabled, drawingTime, rounds, maxPlayers, customWordsPerTurn,
 		clientsPerIPLimit, customWords)
 	if err != nil {
 		pageData.Errors = append(pageData.Errors, err.Error())

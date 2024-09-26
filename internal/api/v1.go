@@ -94,6 +94,7 @@ func (handler *V1Handler) postLobby(writer http.ResponseWriter, request *http.Re
 	customWordsPerTurn, customWordsPerTurnInvalid := ParseCustomWordsPerTurn(request.Form.Get("custom_words_per_turn"))
 	clientsPerIPLimit, clientsPerIPLimitInvalid := ParseClientsPerIPLimit(request.Form.Get("clients_per_ip_limit"))
 	publicLobby, publicLobbyInvalid := ParseBoolean("public", request.Form.Get("public"))
+	gifEnabled, gifEnabledInvalid := ParseBoolean("gif_enabled", request.Form.Get("gif_enabled"))
 
 	var requestErrors []string
 	if languageInvalid != nil {
@@ -120,6 +121,9 @@ func (handler *V1Handler) postLobby(writer http.ResponseWriter, request *http.Re
 	if publicLobbyInvalid != nil {
 		requestErrors = append(requestErrors, publicLobbyInvalid.Error())
 	}
+	if gifEnabledInvalid != nil {
+		requestErrors = append(requestErrors, gifEnabledInvalid.Error())
+	}
 
 	if len(requestErrors) != 0 {
 		http.Error(writer, strings.Join(requestErrors, ";"), http.StatusBadRequest)
@@ -128,7 +132,7 @@ func (handler *V1Handler) postLobby(writer http.ResponseWriter, request *http.Re
 
 	playerName := GetPlayername(request)
 	player, lobby, err := game.CreateLobby(handler.cfg, playerName, language,
-		publicLobby, drawingTime, rounds, maxPlayers, customWordsPerTurn,
+		publicLobby, gifEnabled, drawingTime, rounds, maxPlayers, customWordsPerTurn,
 		clientsPerIPLimit, customWords)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
@@ -253,6 +257,7 @@ func (handler *V1Handler) patchLobby(writer http.ResponseWriter, request *http.R
 	customWordsPerTurn, customWordsPerTurnInvalid := ParseCustomWordsPerTurn(request.Form.Get("custom_words_per_turn"))
 	clientsPerIPLimit, clientsPerIPLimitInvalid := ParseClientsPerIPLimit(request.Form.Get("clients_per_ip_limit"))
 	publicLobby, publicLobbyInvalid := ParseBoolean("public", request.Form.Get("public"))
+	gifEnabled, gifEnabledInvalid := ParseBoolean("gif_enabled", request.Form.Get("gif_enabled"))
 
 	owner := lobby.Owner
 	if owner == nil || owner.GetUserSession() != userSession {
@@ -283,6 +288,9 @@ func (handler *V1Handler) patchLobby(writer http.ResponseWriter, request *http.R
 	if publicLobbyInvalid != nil {
 		requestErrors = append(requestErrors, publicLobbyInvalid.Error())
 	}
+	if gifEnabledInvalid != nil {
+		requestErrors = append(requestErrors, gifEnabledInvalid.Error())
+	}
 
 	if len(requestErrors) != 0 {
 		http.Error(writer, strings.Join(requestErrors, ";"), http.StatusBadRequest)
@@ -301,6 +309,7 @@ func (handler *V1Handler) patchLobby(writer http.ResponseWriter, request *http.R
 		lobby.ClientsPerIPLimit = clientsPerIPLimit
 		lobby.Public = publicLobby
 		lobby.Rounds = rounds
+		lobby.GifEnabled = gifEnabled
 
 		if lobby.State == game.Ongoing {
 			lobby.DrawingTimeNew = drawingTime

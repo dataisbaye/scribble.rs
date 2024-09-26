@@ -21,6 +21,7 @@ type LobbySettingDefaults struct {
 	CustomWordsPerTurn string `env:"CUSTOM_WORDS_PER_TURN"`
 	ClientsPerIPLimit  string `env:"CLIENTS_PER_IP_LIMIT"`
 	Language           string `env:"LANGUAGE"`
+	GifEnabled         string `env:"GIF_ENABLED"`
 }
 
 type CORS struct {
